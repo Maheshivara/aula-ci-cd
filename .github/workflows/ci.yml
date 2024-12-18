@@ -9,7 +9,11 @@ on:
 jobs:
   build:
     name: Build and Push
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        node-version: [18,20,22]
+        os: [ubuntu-latest]
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -17,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{matrix.node-version}}
           cache: yarn
       
       - name: Install dependencies
@@ -25,3 +29,7 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
+      - name: Build docker image
+        run: docker build -t aula-ci-cd:latest .
+
